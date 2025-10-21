@@ -1,0 +1,22 @@
+{
+    "Shashank": {
+        "details": {
+            "address": "Home",
+            "contact": "123456789",
+            "alternate_contact": "987654321",
+            "aadhar": "564185615"
+        },
+        "loans": [
+            {
+                "item_name": "Gold",
+                "type": "Gold",
+                "amount": 500000.0,
+                "interest_rate": 5.0,
+                "interest_type": "compound",
+                "keep_date": "2025-05-15 00:00:00",
+                "cycle_type": "monthly",
+                "claimed": true
+            }
+        ]
+    }
+}
