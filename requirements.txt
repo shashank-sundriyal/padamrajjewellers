@@ -1,3 +1,7 @@
 streamlit
-gspread
-oauth2client
+firebase-admin
+pyrebase4
+pandas
+openpyxl
+numpy
+pyrebase
