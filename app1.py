@@ -32,9 +32,24 @@ import json
 from pathlib import Path
 
 # Firebase imports
+# Firebase imports
 import firebase_admin
 from firebase_admin import credentials, firestore
-import pyrebase
+import streamlit as st
+import json
+
+# ✅ Initialize Firebase from Streamlit Secrets
+try:
+    firebase_creds = json.loads(json.dumps(st.secrets["firebase"]))
+    cred = credentials.Certificate(firebase_creds)
+
+    if not firebase_admin._apps:
+        firebase_admin.initialize_app(cred)
+
+    db = firestore.client()  # <-- Optional, only if you use Firestore
+except Exception as e:
+    st.error(f"Firebase initialization failed: {e}")
+
 
 # -------------------------
 # File / config names
