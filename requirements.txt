@@ -6,3 +6,4 @@ openpyxl
 numpy
 pycryptodome==3.19.0
 pyrebase4==4.8.0
+setuptools
