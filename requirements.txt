@@ -4,4 +4,5 @@ pyrebase4
 pandas
 openpyxl
 numpy
-pyrebase
+pycryptodome==3.19.0
+pyrebase4==4.8.0
