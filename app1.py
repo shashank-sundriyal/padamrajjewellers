@@ -56,44 +56,53 @@ except Exception as e:
 # -------------------------
 # File / config names
 # -------------------------
-SERVICE_ACCOUNT_FILE = NotImplemented
-FIREBASE_CONFIG_FILE = "firebase_config.json"
-EXPORT_NAME = "jewellery_data_export.xlsx"
+# ----------------------------------------------------------------
+# Firebase initialization using Streamlit secrets (no local files)
+# ----------------------------------------------------------------
+import json
+import firebase_admin
+from firebase_admin import credentials, firestore
+import pyrebase
+from pathlib import Path
 
-# -------------------------
-# Utilities
-# -------------------------
-def load_web_config():
-    if not Path(FIREBASE_CONFIG_FILE).exists():
-        st.error(f"Missing {FIREBASE_CONFIG_FILE}. Create it from Firebase Console (Web app config).")
-        st.stop()
-    with open(FIREBASE_CONFIG_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-def init_firebase():
-    # Admin
-    if not Path(SERVICE_ACCOUNT_FILE).exists():
-        st.error(f"Missing {SERVICE_ACCOUNT_FILE}. Download service account JSON from Firebase Console and place it here.")
-        st.stop()
-
+# Initialize Firebase Admin SDK (for Firestore)
+try:
     if not firebase_admin._apps:
+        firebase_config = json.loads(json.dumps(dict(st.secrets["firebase"])))
         cred = credentials.Certificate(firebase_config)
         firebase_admin.initialize_app(cred)
     db = firestore.client()
-
-    # Pyrebase (auth)
-    config = load_web_config()
-    pb = pyrebase.initialize_app(config)
-    auth = pb.auth()
-    return db, auth
-
-# Initialize once
-try:
-    db, auth = init_firebase()
+    st.success("✅ Connected to Firebase successfully")
 except Exception as e:
-    st.error("Failed to initialize Firebase. Check your serviceAccountKey.json and firebase_config.json.")
-    st.exception(e)
+    st.error(f"❌ Firebase initialization failed: {e}")
     st.stop()
+
+# Initialize Pyrebase (for Auth)
+try:
+    # Use same config as Firebase secrets for auth
+    pyrebase_config = {
+        "apiKey": st.secrets["firebase"].get("api_key", ""),
+        "authDomain": f"{st.secrets['firebase']['project_id']}.firebaseapp.com",
+        "projectId": st.secrets["firebase"]["project_id"],
+        "storageBucket": f"{st.secrets['firebase']['project_id']}.appspot.com",
+        "messagingSenderId": st.secrets["firebase"].get("messaging_sender_id", ""),
+        "appId": st.secrets["firebase"].get("app_id", ""),
+        "databaseURL": ""
+    }
+
+    pb = pyrebase.initialize_app(pyrebase_config)
+    auth = pb.auth()
+    st.success("✅ Firebase Auth ready")
+
+except Exception as e:
+    st.warning(f"⚠️ Firebase Auth could not be initialized: {e}")
+    auth = None
+
+# ----------------------------------------------------------------
+# Export / other app configs
+# ----------------------------------------------------------------
+EXPORT_NAME = "jewellery_data_export.xlsx"
+
 
 # -------------------------
 # Firestore helpers
