@@ -56,7 +56,7 @@ except Exception as e:
 # -------------------------
 # File / config names
 # -------------------------
-SERVICE_ACCOUNT_FILE = "serviceAccountKey.json"
+SERVICE_ACCOUNT_FILE = NotImplemented
 FIREBASE_CONFIG_FILE = "firebase_config.json"
 EXPORT_NAME = "jewellery_data_export.xlsx"
 
@@ -77,7 +77,7 @@ def init_firebase():
         st.stop()
 
     if not firebase_admin._apps:
-        cred = credentials.Certificate(SERVICE_ACCOUNT_FILE)
+        cred = credentials.Certificate(firebase_config)
         firebase_admin.initialize_app(cred)
     db = firestore.client()
 
