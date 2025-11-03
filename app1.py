@@ -33,18 +33,24 @@ from pathlib import Path
 
 # Firebase imports
 # Firebase imports
+# -------------------- Firebase Initialization --------------------
 import json
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-if not firebase_admin._apps:
-    # Convert Streamlit's AttrDict to normal dict before JSON serialization
-    firebase_config = json.loads(json.dumps(dict(st.secrets["firebase"])))
-    cred = credentials.Certificate(firebase_config)
-    firebase_admin.initialize_app(cred)
-
-db = firestore.client()
-
+# Safely initialize Firebase using Streamlit secrets
+try:
+    if not firebase_admin._apps:
+        # Convert AttrDict to pure dict
+        firebase_config = json.loads(json.dumps(dict(st.secrets["firebase"])))
+        cred = credentials.Certificate(firebase_config)
+        firebase_admin.initialize_app(cred)
+    db = firestore.client()
+    st.success("✅ Connected to Firebase successfully")
+except Exception as e:
+    st.error(f"❌ Firebase initialization failed: {e}")
+    st.stop()
+# ----------------------------------------------------------------
 
 
 # -------------------------
